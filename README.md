@@ -1,11 +1,13 @@
 # macOS / iOS 运行验证
 
-当前只配置 macOS 的一次性运行验证。游戏使用 Zig 编译为 Apple Silicon
-版本，图形后端为 Metal，构建目标为 `aarch64-macos.14.0`，最低系统版本为
-macOS 14.0。
+提供 macOS 和 iOS 模拟器的一次性运行验证，均使用本地 Zig 交叉编译的
+ARM64 游戏，图形后端为 Metal。macOS 最低支持 14.0，iOS 最低支持 15.0。
 
 `macos-check/game-macos-arm64/` 包含游戏可执行文件、18 个资源文件和
 `run.command` 启动脚本。资源直接放在目录中，便于查看和替换。
+
+`ios-check/game-ios-simulator/demo.app/` 包含模拟器可执行文件、应用配置、
+图标和 18 个资源文件，构建目标为 `aarch64-ios.15.0-simulator`。
 
 ## 运行流水线
 
@@ -26,6 +28,13 @@ macOS 14.0。
 
 这是一次启动和截图验证，不包含游戏逻辑测试，也不重新编译游戏。
 如果云端没有 Metal 设备，检查会直接失败并保留日志。
+
+iOS 验证选择 `iOS simulator one-time run`，点击 `Run workflow`。
+流水线使用 Xcode 16.4，在 iPhone 16 / iOS 18.5 模拟器中签名、安装和启动游戏，
+等待 10 秒后截图并确认进程仍在运行。运行环境不改变最低支持 iOS 15 的设置。
+结果保存在 `ios-run-result` 中，保留 3 天；查看 `game.png` 确认画面，
+`game.log` 和 `game-error.log` 是游戏输出，`run.log` 是完整流水线日志。
+截图和进程检查不包含游戏逻辑测试，画面是否正确仍需查看截图。
 
 ## 在 Mac 上运行
 

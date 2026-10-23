@@ -1,0 +1,29 @@
+name: iOS simulator one-time run
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  run-game:
+    runs-on: macos-15
+    timeout-minutes: 10
+    env:
+      # SDK 与模拟器使用同一个 Xcode 版本。
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v7
+      # 安装本地交叉编译的完整游戏，检查进程并保存模拟器画面。
+      - name: Run game in iOS simulator
+        shell: bash
+        run: |
+          mkdir -p ios-check/result
+          bash ios-check/check.sh 2>&1 | tee ios-check/result/run.log
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: ios-run-result
+          path: ios-check/result
+          if-no-files-found: error
+          retention-days: 3
