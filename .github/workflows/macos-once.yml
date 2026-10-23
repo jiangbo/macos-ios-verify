@@ -1,0 +1,26 @@
+name: macOS one-time run
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  run-game:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      # 运行本机已经交叉编译好的游戏，只验证一次启动和画面。
+      - name: Run game and capture window
+        shell: bash
+        run: |
+          mkdir -p macos-check/result
+          bash macos-check/check.sh 2>&1 | tee macos-check/result/run.log
+      # 无论成功或失败，都保留环境信息和游戏日志。
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: macos-run-result
+          path: macos-check/result
+          retention-days: 3
