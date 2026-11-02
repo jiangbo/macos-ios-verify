@@ -1,6 +1,9 @@
 name: iOS simulator one-time run
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    branches: [verify-apple-font-20261102]
 
 permissions:
   contents: read
